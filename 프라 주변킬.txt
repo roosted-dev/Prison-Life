@@ -1,0 +1,9 @@
+for _,v in pairs(game.Players:GetPlayers()) do
+	pcall(function()
+		if workspace:FindFirstChild(game.Players.LocalPlayer.Name) and ((game.Players.LocalPlayer.Character:FindFirstChildOfClass('Part').Position-workspace[v.Name]:FindFirstChildOfClass('Part').Position).magnitude < 10) and v ~= game.Players.LocalPlayer and not v:IsFriendsWith(game.Players.LocalPlayer.UserId) then
+			for i = 1,workspace[v.Name].Humanoid.Health/5 do
+				game:GetService("ReplicatedStorage").meleeEvent:FireServer(v)
+			end
+		end
+	end)
+end

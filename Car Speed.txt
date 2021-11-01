@@ -1,0 +1,26 @@
+game:GetService('RunService').Stepped:connect(function()
+local client = game:GetService("Players").LocalPlayer 
+local p = game.Players.LocalPlayer
+if client.PlayerGui:FindFirstChild("Screen") then
+    local number = math.huge
+    local car = game.Players.LocalPlayer.PlayerGui.Screen.CarSeat.Value
+    local rwd = car.Parent.Parent.RWD 
+    local v5 = car.Parent.Parent.LW.VS
+    local v6 = car.Parent.Parent.RW.VS 
+    
+    if rwd and v5 and v6 and car then 
+        rwd.MaxSpeed = number
+        v5.MaxSpeed = number
+        v6.MaxSpeed = number
+        
+    elseif car.Throttle == 1 then
+        rwd.Throttle = number
+        v5.Throttle = number
+        v6.Throttle = number
+    elseif car.Throttle == -1 then
+        rwd.Throttle = number
+        v6.Throttle = number
+        v5.Throttle = number
+    end
+end
+end)

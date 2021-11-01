@@ -1,0 +1,12 @@
+function GetRootOri()
+	a1,a2,a3 = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame:ToOrientation()
+	return CFrame.new(game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame.X, game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame.Y, game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame.Z) * CFrame.fromOrientation(0,a2,0)
+end
+local lastPos = GetRootOri()
+local args = {
+    [1] = game:GetService("Players").LocalPlayer,
+    [2] = "1015"
+}
+
+workspace.Remote.loadchar:InvokeServer(unpack(args))
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = lastPos

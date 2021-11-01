@@ -1,0 +1,23 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local GunStates = {}
+-- require
+ReplicatedStorage.UpdateEvent.OnClientEvent:connect(function(p9, p10)
+    local Gun = p10:FindFirstChild("GunStates")
+    if p10 and Gun and Gun.ClassName == "ModuleScript" then
+        sM = require(Gun)
+        if sM.CurrentAmmo == 0 and not table.find(GunStates, p10.Name) then
+            table.insert(GunStates, p10.Name)
+            print(p10.Name.." empty, reloading")
+            ReplicatedStorage.ReloadEvent:FireServer(p10)
+            wait(sM.ReloadTime)
+        	warn("finished reloading "..p10.Name)
+        	sM.CurrentAmmo = sM.MaxAmmo
+			for i,v in pairs(GunStates) do
+				if v == p10.Name then
+					table.remove(GunStates, i)
+				end
+			end
+    	end
+    end
+end)

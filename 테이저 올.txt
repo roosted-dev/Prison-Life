@@ -1,0 +1,33 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local ShootEvent = ReplicatedStorage:WaitForChild("ShootEvent")
+local ReloadEvent = ReplicatedStorage:WaitForChild("ReloadEvent")
+
+local Tool = LocalPlayer:FindFirstChild("Backpack"):FindFirstChild("Taser") or LocalPlayer.Character:FindFirstChild("Taser")
+
+if not Tool then
+    local lastPos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+	workspace.Remote.loadchar:InvokeServer("", "Bright blue")
+	wait()
+	game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = lastPos
+end
+local Tool = LocalPlayer:FindFirstChild("Backpack"):FindFirstChild("Taser") or LocalPlayer.Character:FindFirstChild("Taser")
+
+local Package = {}
+for i,v in pairs(Players:GetChildren()) do
+	local torso = v.Character and v.Character:FindFirstChild("Torso")
+	if torso and Tool then
+		local Packet = {
+			["RayObject"] = Ray.new(Vector3.new(), Vector3.new()), 
+			["Distance"] = 0, 
+			["Cframe"] = CFrame.new(), 
+			["Hit"] = v.Character.Torso
+		}
+		Package[#Package+1] = Packet
+	end
+end
+
+ShootEvent:FireServer(Package, Tool)
+ReloadEvent:FireServer(Tool)

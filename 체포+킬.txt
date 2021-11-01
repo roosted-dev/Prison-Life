@@ -1,0 +1,50 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local ItemHandler = workspace:WaitForChild("Remote").ItemHandler
+local ShootEvent = ReplicatedStorage:WaitForChild("ShootEvent")
+local ReloadEvent = ReplicatedStorage:WaitForChild("ReloadEvent")
+
+function kill(plr)
+    local Package = {}
+    ItemHandler:InvokeServer(workspace.Prison_ITEMS.giver["M9"].ITEMPICKUP)
+    local Tool = LocalPlayer:FindFirstChild("Backpack"):FindFirstChild("M9") or LocalPlayer.Character:FindFirstChild("M9")
+	local head = plr.Character and plr.Character:FindFirstChild("Head")
+	if head and Tool and not plr.Character:FindFirstChild("ForceField") then
+        local Packet = {
+			["RayObject"] = Ray.new(Vector3.new(), Vector3.new()), 
+			["Distance"] = 0, 
+			["Cframe"] = CFrame.new(), 
+			["Hit"] = plr.Character.Head
+		}
+		for x = 1, 10 do
+			Package[#Package+1] = Packet
+		end
+        workspace.Remote.TeamEvent:FireServer("Medium stone grey")
+        ReloadEvent:FireServer(Tool)
+        ShootEvent:FireServer(Package, Tool)
+        workspace.Remote.TeamEvent:FireServer("Bright orange")
+    end
+end
+
+local cpos = LocalPlayer.Character.HumanoidRootPart.CFrame
+for i,v in pairs(game.Teams.Criminals:GetPlayers()) do
+    if v.Name ~= LocalPlayer.Name and not v.Character.Head:FindFirstChild("handcuffedGui") and not v:IsFriendsWith(LocalPlayer.UserId) then
+        local args = {v.Character:FindFirstChild("Head")}
+        repeat
+            if v.Character.Head:FindFirstChild("handcuffedGui") then
+                break
+            end
+            if LocalPlayer.Character.Humanoid.Sit == true then
+                LocalPlayer.Character.Humanoid.Sit = false
+            end
+            LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0,0,1.3)
+            game.Workspace.Remote.arrest:InvokeServer(unpack(args))
+        until v.Character.Head:FindFirstChild("handcuffedGui")
+        kill(v)
+    else
+        kill(v)
+    end
+end
+LocalPlayer.Character.HumanoidRootPart.CFrame = cpos

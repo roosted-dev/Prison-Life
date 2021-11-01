@@ -1,0 +1,65 @@
+name = "str"
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local Tool_Name = "M9" -- Hammer M9 Remington 870
+function bring(target)
+    speaker = game.Players.LocalPlayer
+    if target ~= nil then
+        NOW = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+
+        local args = {
+            [1] = game:GetService("Players").LocalPlayer,
+            [2] = "Really red"
+        }
+        
+        workspace.Remote.loadchar:InvokeServer(unpack(args))
+        workspace.Remote.ItemHandler:InvokeServer(workspace.Prison_ITEMS.giver[Tool_Name].ITEMPICKUP)
+        local Tool = LocalPlayer:FindFirstChild("Backpack"):FindFirstChild(Tool_Name) or LocalPlayer.Character:FindFirstChild(Tool_Name)
+        game.Players.LocalPlayer.Character.Humanoid:UnequipTools()
+        game.Players.LocalPlayer.Character.Humanoid:Destroy()
+        local hum = Instance.new("Humanoid", game.Players.LocalPlayer.Character)
+        Tool.Parent = game.Players.LocalPlayer.Character
+        Tool.Handle.Massless = true
+        Tool.Handle.Size = Tool.Handle.Size + Vector3.new(4,4,4)
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, -4, 0)
+
+        local n = 0
+        repeat
+            n = n + 1
+            target.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(1, 1, -1)
+            wait(0.01)
+        until n > 10
+        
+        local i = 5
+        repeat
+            i = i + 1
+            target.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, -1, 0)
+            wait(0.01)
+        until i > 2
+        
+        --wait(0.3)
+        workspace.Remote.loadchar:InvokeServer()
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = NOW
+    end
+end
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local function RemoveSpaces(String)
+    return String:gsub("%s+", "") or String
+end
+
+local function FindPlayer(String)
+    String = RemoveSpaces(String)
+    for _, _Player in pairs(Players:GetPlayers()) do
+        if _Player.Name:lower():match('^'.. String:lower()) then
+            return _Player
+        end
+    end
+    return nil
+end
+
+player = FindPlayer(name)
+bring(player)

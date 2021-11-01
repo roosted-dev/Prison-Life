@@ -1,0 +1,68 @@
+AUTO_RESPAWN = true
+
+
+function Died()
+    local Prison_Time = game:GetService("Lighting").ClockTime
+    
+    local position = workspace:FindFirstChild(game.Players.LocalPlayer.Name).HumanoidRootPart.CFrame
+    local _, RY, _ = position:ToOrientation()
+    position = CFrame.new(position.p) * CFrame.fromOrientation(0, RY, 0)
+    
+    local camera = workspace.CurrentCamera.CFrame
+    
+	local old_team = game.Players.LocalPlayer.TeamColor.Name
+	
+	local LocalPlayer = game.Players.LocalPlayer
+	if LocalPlayer.TeamColor.Name == "Really red" then
+	    game.workspace.Remote.loadchar:InvokeServer()
+	elseif LocalPlayer.TeamColor.Name == "Bright orange" then
+	    print(Prison_Time > 22 or Prison_Time < 6)
+        if Prison_Time > 22 or Prison_Time < 6 then
+            workspace.Remote.loadchar:InvokeServer()
+            workspace.Remote.TeamEvent:FireServer("Medium stone grey")
+        	wait()
+        	workspace.Remote.loadchar:InvokeServer()
+        	workspace.Remote.TeamEvent:FireServer("Bright orange")
+        else
+            game.workspace.Remote.loadchar:InvokeServer()
+        end
+	elseif LocalPlayer.TeamColor.Name == "Bright blue" then
+        workspace.Remote.loadchar:InvokeServer()
+        if #game:GetService("Teams").Guards:GetPlayers() >= 8 then
+            workspace.Remote.loadchar:InvokeServer(nil, old_team)
+        end
+	elseif tostring(game.Players.LocalPlayer.TeamColor) == "Medium stone grey" then
+    	workspace.Remote.TeamEvent:FireServer("Bright orange")
+    	wait()
+    	workspace.Remote.loadchar:InvokeServer()
+    	workspace.Remote.TeamEvent:FireServer("Medium stone grey")
+
+	elseif LocalPlayer.TeamColor.Name ~= "Really red" or LocalPlayer.TeamColor.Name ~= "Bright orange" or LocalPlayer.TeamColor.Name ~= "Bright blue" or LocalPlayer.TeamColor.Name ~= "Medium stone grey" then
+        workspace.Remote.TeamEvent:FireServer("Bright orange")
+        wait()
+        game.workspace.Remote.loadchar:InvokeServer()
+        workspace.Remote.loadchar:InvokeServer(nil, old_team)
+	end
+	
+    local HumanoidRootPart = workspace:FindFirstChild(game.Players.LocalPlayer.Name):WaitForChild('HumanoidRootPart',0.3)
+    
+    HumanoidRootPart.CFrame = position
+    
+    workspace.CurrentCamera.CFrame = camera
+    workspace.CurrentCamera.Changed:Wait()
+    workspace.CurrentCamera.CFrame = camera
+    
+    game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true)
+
+end
+
+local char = workspace:FindFirstChild(game.Players.LocalPlayer.Name)
+char.Humanoid.Died:Connect(Died)
+
+game.Players.LocalPlayer.CharacterAdded:Connect(function(newChar)
+
+	if newChar:WaitForChild("Humanoid") then 
+		newChar.Humanoid.Died:Connect(Died)
+	end
+end)
+

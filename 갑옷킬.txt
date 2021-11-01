@@ -1,0 +1,32 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local ItemHandler = workspace:WaitForChild("Remote").ItemHandler
+local ShootEvent = ReplicatedStorage:WaitForChild("ShootEvent")
+local ReloadEvent = ReplicatedStorage:WaitForChild("ReloadEvent")
+
+ItemHandler:InvokeServer(workspace.Prison_ITEMS.giver["M9"].ITEMPICKUP)
+
+local Tool = LocalPlayer:FindFirstChild("Backpack"):FindFirstChild("M9") or LocalPlayer.Character:FindFirstChild("M9")
+
+local Package = {}
+
+for _,v in pairs(game.Players:GetPlayers()) do
+    local vest = v.Character:FindFirstChild("vest")
+	local head = v.Character and v.Character:FindFirstChild("Head")
+	if head and Tool and vest then
+		local Packet = {
+			["RayObject"] = Ray.new(Vector3.new(), Vector3.new()), 
+			["Distance"] = 0, 
+			["Cframe"] = CFrame.new(), 
+			["Hit"] = v.Character.Head
+		}
+		for x = 1, 10 do
+			Package[#Package+1] = Packet
+		end
+	end
+end
+
+ReloadEvent:FireServer(Tool)
+ShootEvent:FireServer(Package, Tool)

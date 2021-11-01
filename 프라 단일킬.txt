@@ -1,0 +1,46 @@
+local function RemoveSpaces(String)
+    return String:gsub("%s+", "") or String
+end
+
+local function FindPlayer(String)
+    String = RemoveSpaces(String)
+    for _, _Player in pairs(game:GetService("Players"):GetPlayers()) do
+        if _Player.Name:lower():match('^'.. String:lower()) then
+            return _Player
+        end
+    end
+    return nil
+end
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local ItemHandler = workspace:WaitForChild("Remote").ItemHandler
+local ShootEvent = ReplicatedStorage:WaitForChild("ShootEvent")
+local ReloadEvent = ReplicatedStorage:WaitForChild("ReloadEvent")
+
+ItemHandler:InvokeServer(workspace.Prison_ITEMS.giver["M9"].ITEMPICKUP)
+
+local Tool = LocalPlayer:FindFirstChild("Backpack"):FindFirstChild("M9") or LocalPlayer.Character:FindFirstChild("M9")
+
+function kill(plr)
+    local Package = {}
+	local head = plr.Character and plr.Character:FindFirstChild("Head")
+	print("1")
+	if head and Tool then
+        local Packet = {
+			["RayObject"] = Ray.new(Vector3.new(), Vector3.new()), 
+			["Distance"] = 0, 
+			["Cframe"] = CFrame.new(), 
+			["Hit"] = plr.Character.Head
+		}
+		for x = 1, 10 do
+			Package[#Package+1] = Packet
+		end
+        ReloadEvent:FireServer(Tool)
+        ShootEvent:FireServer(Package, Tool)
+    end
+end
+
+kill(FindPlayer("asd"))    

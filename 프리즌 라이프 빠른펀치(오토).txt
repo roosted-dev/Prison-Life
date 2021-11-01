@@ -1,0 +1,108 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local meleeEvent = ReplicatedStorage:WaitForChild("meleeEvent")
+local SoundEvent = ReplicatedStorage:WaitForChild("SoundEvent")
+local LocalPlayer = game.Players.LocalPlayer
+local v11 = workspace.Cameras:GetChildren()
+local hud = LocalPlayer.PlayerGui:WaitForChild("Home"):WaitForChild("hud")
+local CameraFrame = hud:WaitForChild("CameraFrame", 5)
+
+while true do wait()
+	if LocalPlayer.Character then
+		break
+	end
+end
+local Character = LocalPlayer.Character
+local Humanoid = Character:WaitForChild("Humanoid", 10)
+
+local function v23(p1)
+	local v24 = Instance.new("Animation")
+	v24.AnimationId = p1
+	return v24
+end
+
+local v21 = Humanoid:LoadAnimation((v23("rbxassetid://484200742")))
+local v22 = Humanoid:LoadAnimation((v23("rbxassetid://484926359")))
+
+local u3 = nil
+local u4 = false
+local function u5(p2, p3)
+	local l__Position__25 = Character.Torso.Position
+	local v26, v27 = workspace:FindPartOnRay(Ray.new(l__Position__25, (Character.HumanoidRootPart.CFrame:toWorldSpace(CFrame.new(0, 0, -5)).p - l__Position__25).unit * 3), Character)
+	if v26 and v26.Parent:FindFirstChild("Humanoid") then
+		local v28 = Players:GetPlayerFromCharacter(v26.Parent)
+		if v28 then
+			meleeEvent:FireServer(v28)
+			u3.Pitch = 1 + math.random(-3, 3) / 10
+			u3:Play()
+			SoundEvent:FireServer(u3)
+			return
+		end
+--[[	elseif v26 and v26.Name == "trimboi" then
+		u3.Pitch = 1 + math.random(-3, 3) / 10
+		u3:Play()]]
+	end
+end
+(function()
+	math.randomseed(tick())
+	u3 = Character.Head:WaitForChild("punchSound")
+	CameraFrame.Position = UDim2.new(0, 0, 1, 0)
+end)()
+
+local function u27()
+	v21:Stop()
+	v22:Stop()
+	if u4 then
+		v21:Play()
+	else
+		v22:Play()
+	end
+	u4 = not u4
+	delay(0.2, u5)
+	--wait(0.6)
+end
+
+local punch_start = false;
+local punch_start2 = false;
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local plr = game:GetService("Players").LocalPlayer
+
+local Tool = Instance.new("Tool")
+Tool.RequiresHandle = false
+Tool.Name = "1"
+Tool.Equipped:connect(function(punch)
+    punch.Button1Down:connect(function()
+        punch_start = true
+    end)
+	punch.Button1Up:connect(function()
+		punch_start = false
+	end)
+end)
+
+
+local Tool2 = Instance.new("Tool")
+Tool2.RequiresHandle = false
+Tool2.Name = "2"
+Tool2.Equipped:connect(function(punch)
+    punch.Button1Down:connect(function()
+        punch_start2 = true
+        repeat wait()
+            u27()
+        until punch_start2 == false
+    end)
+	punch.Button1Up:connect(function()
+		punch_start2 = false
+	end)
+end)
+
+
+game:GetService('RunService').Stepped:connect(function()
+    if punch_start == true then
+        u27()
+    end
+end)
+
+Tool.Parent = plr.Backpack
+Tool2.Parent = plr.Backpack
